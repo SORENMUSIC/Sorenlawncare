@@ -31,6 +31,9 @@
             padding: 15px 0;
             width: 100%;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            position: sticky; /* Make header sticky */
+            top: 0;
+            z-index: 1000; /* Ensure it's above other content */
         }
         nav {
             display: flex;
@@ -252,6 +255,23 @@
             background-color: #15803d; /* Green-800 */
         }
 
+        /* Owner Page Styles */
+        .owner-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .owner-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border: 4px solid #10b981; /* Green-500 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
         footer {
             background-color: #047857; /* Emerald-700 */
             color: white;
@@ -330,6 +350,7 @@
                 <li><a href="#services">Services</a></li>
                 <li><a href="#pricing">Pricing</a></li>
                 <li><a href="#quote">Get a Quote</a></li>
+                <li><a href="#owner">About Us</a></li> <!-- New Nav Link -->
                 <li><a href="#contact">Contact Us</a></li>
             </ul>
         </nav>
@@ -466,6 +487,21 @@
             </div>
         </section>
 
+        <!-- Owner Page Section -->
+        <section id="owner" class="section-padding">
+            <h2 class="section-title">
+                <span class="text-teal-500 text-4xl">👨‍💼</span> About Us <span class="text-teal-500 text-4xl">👨‍💼</span>
+            </h2>
+            <div class="card owner-section">
+                <img src="https://placehold.co/150x150/86efac/16a34a?text=Jihad" alt="Jihad Davis" class="owner-image">
+                <h3 class="text-3xl font-bold text-green-800 mb-2">Jihad Davis</h3>
+                <p class="text-xl text-gray-700 mb-4">Owner & Founder of Soren Lawn Care</p>
+                <p class="text-lg text-gray-600 max-w-prose">
+                    Welcome to Soren Lawn Care! I'm Jihad Davis, the proud owner and founder. My passion for creating beautiful outdoor spaces drives our commitment to providing top-notch lawn care services. We believe in clean cuts, professional service, and ensuring your lawn looks its best, every time. We're dedicated to serving our community with reliability, affordability, and a local touch.
+                </p>
+            </div>
+        </section>
+
         <!-- Serving Area -->
         <section id="serving" class="section-padding text-center">
             <h2 class="section-title">
@@ -483,7 +519,7 @@
             </h2>
             <div class="card">
                 <p class="text-center text-gray-600 mb-6 text-lg">
-                    Have questions or ready to book? Reach out to us!
+                    Have questions or ready to book? Send us an email directly!
                 </p>
                 <form id="contactForm">
                     <div class="contact-form-group">
@@ -498,7 +534,7 @@
                         <label for="contactMessage">Your Message:</label>
                         <textarea id="contactMessage" placeholder="I'd like to inquire about monthly maintenance for my medium yard..."></textarea>
                     </div>
-                    <button type="submit" class="contact-submit-btn">Send Message</button>
+                    <button type="submit" class="contact-submit-btn">Send Message via Email</button>
                     <div id="contactMessageStatus" class="llm-result hidden mt-4 text-center !bg-blue-50 !border-blue-300 !text-blue-800"></div>
                 </form>
                 <div class="text-center mt-8">
@@ -617,7 +653,10 @@
                         }
                     };
 
-                    const apiKey = ""; // Canvas will provide this at runtime
+                    // IMPORTANT: Your Gemini API Key is now directly embedded here.
+                    // This is suitable for simple deployments but for highly sensitive applications,
+                    // consider server-side handling or Vercel environment variables with a build step.
+                    const apiKey = "AIzaSyDdcNArY5_M1peoESAsFjMEGaRcg7pyzqM";
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                     const response = await fetch(apiUrl, {
@@ -653,9 +692,10 @@
                 }
             });
 
-            // Contact Form Submission (Client-side only)
+            // Contact Form Submission (Redirects to Mailto)
             const contactForm = document.getElementById('contactForm');
             const contactMessageStatus = document.getElementById('contactMessageStatus');
+            const ownerEmail = "sorenbyjayd@Gmail.com"; // Your email address
 
             contactForm.addEventListener('submit', (e) => {
                 e.preventDefault(); // Prevent actual form submission
@@ -664,14 +704,16 @@
                 const email = document.getElementById('contactEmail').value;
                 const message = document.getElementById('contactMessage').value;
 
-                // In a real application, you would send this data to a backend server.
-                // For this example, we'll just simulate a success message.
-                console.log('Contact Form Submitted:', { name, email, message });
+                const subject = encodeURIComponent(`Inquiry from ${name} via Soren Lawn Care Website`);
+                const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}\n\n---\nSent from Soren Lawn Care Website`);
 
-                contactMessageStatus.innerHTML = `Thank you, <strong>${name}</strong>! Your message has been received. We will get back to you at <strong>${email}</strong> shortly.`;
+                window.location.href = `mailto:${ownerEmail}?subject=${subject}&body=${body}`;
+
+                // Provide feedback to the user that their email client should open
+                contactMessageStatus.innerHTML = `Thank you, <strong>${name}</strong>! Your email client should now open with a pre-filled message.`;
                 contactMessageStatus.classList.remove('hidden');
-                contactMessageStatus.classList.add('!bg-green-50', '!border-green-300', '!text-green-800'); // Apply success styling
-                contactForm.reset(); // Clear the form
+                contactMessageStatus.classList.add('!bg-blue-50', '!border-blue-300', '!text-blue-800'); // Apply info styling
+                contactForm.reset(); // Clear the form after redirection attempt
             });
         });
     </script>
